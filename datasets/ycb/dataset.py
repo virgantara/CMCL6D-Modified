@@ -19,9 +19,9 @@ import cv2
 class PoseDataset(data.Dataset):
     def __init__(self, mode, num_pt, add_noise, root, noise_trans, refine):
         if mode == 'train':
-            self.path = '/home/wangzihanggg/CMCL6D/datasets/ycb/dataset_config/train_data_list.txt'
+            self.path = './datasets/ycb/dataset_config/train_data_list.txt'
         elif mode == 'test':
-            self.path = '/home/wangzihanggg/CMCL6D/datasets/ycb/dataset_config/test_data_list.txt'
+            self.path = './datasets/ycb/dataset_config/test_data_list.txt'
         self.num_pt = num_pt
         self.root = root
         # self.add_noise = add_noise
@@ -49,7 +49,7 @@ class PoseDataset(data.Dataset):
         self.len_real = len(self.real)
         self.len_syn = len(self.syn)
 
-        class_file = open('/home/wangzihanggg/CMCL6D/datasets/ycb/dataset_config/classes.txt')
+        class_file = open('./datasets/ycb/dataset_config/classes.txt')
         class_id = 1
         self.cld = {}
         while 1:

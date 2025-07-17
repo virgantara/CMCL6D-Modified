@@ -10,6 +10,7 @@ export CUDA_VISIBLE_DEVICES=0
 #export CUDA_VISIBLE_DEVICES=1
 #export CUDA_VISIBLE_DEVICES=2
 #export CUDA_VISIBLE_DEVICES=3
+export PYTHONPATH=$(pwd):$PYTHONPATH
 
 start=`date +%s`
     
