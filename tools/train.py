@@ -25,9 +25,10 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', type=str, default = 'ycb', help='ycb video dataset')
-parser.add_argument('--dataset_root', type=str, default = '/home/wangzihanggg/CMCL6D/datasets/ycb/YCB_Video_Dataset', help='dataset root dir (''YCB_Video_Dataset'' or ''Linemod_preprocessed'')')
+parser.add_argument('--dataset_root', type=str, default = './datasets/ycb/YCB_Video_Dataset', help='dataset root dir (''YCB_Video_Dataset'' or ''Linemod_preprocessed'')')
 # parser.add_argument('--batch_size', type=int, default = 2, help='batch size')
 parser.add_argument('--batch_size', type=int, default = 1, help='batch size')
+parser.add_argument('--log_dir', type=str, default = './experiments/logs/ycb', help='batch size')
 parser.add_argument('--workers', type=int, default = 0, help='number of data loading workers')
 parser.add_argument('--lr', default=0.0001, help='learning rate')
 parser.add_argument('--lr_rate', default=0.3, help='learning rate decay rate')
@@ -54,7 +55,7 @@ def main():
         opt.num_objects = 21 #number of object classes in the dataset
         opt.num_points = 1000 #number of points on the input pointcloud
         opt.outf = './trained_models/ycb' #folder to save trained models
-        opt.log_dir = '/home/wangzihanggg/CMCL6D/experiments/logs/ycb' #folder to save logs
+        opt.log_dir = opt.log_dir #folder to save logs
         opt.repeat_epoch = 1 #number of repeat times for one epoch training
     else:
         print('Unknown dataset')
