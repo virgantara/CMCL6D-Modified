@@ -49,6 +49,7 @@ opt = parser.parse_args()
 
 
 def main():
+    print("Init seed")
     opt.manualSeed = random.randint(1, 10000)
     random.seed(opt.manualSeed)
     torch.manual_seed(opt.manualSeed)
@@ -63,12 +64,16 @@ def main():
         print('Unknown dataset')
         return
 
+    print("Entering estimator")
     estimator = PoseNet(num_points = opt.num_points, num_obj = opt.num_objects)
     # estimator.cuda()
+
+    print("Entering refier")
     refiner = PoseRefineNet(num_points = opt.num_points, num_obj = opt.num_objects)
     # refiner.cuda()
 
     if opt.resume_posenet != '':
+        print("resuming posenet")
         estimator.load_state_dict(torch.load('{}'.format(opt.resume_posenet)))
         print(">>>>>>>>>>>>>>>>>>>>loaded resume POSENET pth<<<<<<<<<<<<<<<<<<<<<<")
 
@@ -87,10 +92,15 @@ def main():
         optimizer = optim.Adam(estimator.parameters(), lr=opt.lr)
 
     if opt.dataset == 'ycb':
+        print("loading dataset POSEdataset")
         dataset = PoseDataset_ycb('train', opt.num_points, True, opt.dataset_root, opt.noise_trans, opt.refine_start)
+
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=1, shuffle=True, num_workers=opt.workers)
+
     if opt.dataset == 'ycb':
+        print("Loading test dataset")
         test_dataset = PoseDataset_ycb('test', opt.num_points, False, opt.dataset_root, 0.0, opt.refine_start)
+
     testdataloader = torch.utils.data.DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=opt.workers)
 
     opt.sym_list = dataset.get_sym_list()

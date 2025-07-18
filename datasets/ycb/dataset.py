@@ -15,6 +15,7 @@ import scipy.misc
 import scipy.io as scio
 # from skimage.segmentation import slic,mark_boundaries
 import cv2
+from tqdm import tqdm
 
 class PoseDataset(data.Dataset):
     def __init__(self, mode, num_pt, add_noise, root, noise_trans, refine):
@@ -32,7 +33,7 @@ class PoseDataset(data.Dataset):
         self.real = []
         self.syn = []
         input_file = open(self.path)
-        while 1:
+        while tqdm(1):
             input_line = input_file.readline()
             if not input_line:
                 break
@@ -52,7 +53,7 @@ class PoseDataset(data.Dataset):
         class_file = open('./datasets/ycb/dataset_config/classes.txt')
         class_id = 1
         self.cld = {}
-        while 1:
+        while tqdm(1):
             class_input = class_file.readline()
             if not class_input:
                 break
@@ -119,7 +120,7 @@ class PoseDataset(data.Dataset):
 
         add_front = False
         if self.add_noise:
-            for k in range(5):
+            for k in tqdm(range(5)):
                 seed = random.choice(self.syn)
                 front = np.array(self.trancolor(Image.open('{0}/{1}-color.png'.format(self.root, seed)).convert("RGB")))
                 front = np.transpose(front, (2, 0, 1))
