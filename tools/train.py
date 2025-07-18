@@ -20,6 +20,8 @@ from lib.loss import Loss
 from lib.loss_refiner import Loss_refine
 from lib.utils import setup_logger
 import cv2
+from tqdm import tqdm
+
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 # os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
@@ -105,7 +107,7 @@ def main():
             os.remove(os.path.join(opt.log_dir, log))
     st_time = time.time()
 
-    for epoch in range(opt.start_epoch, opt.nepoch):
+    for epoch in tqdm(range(opt.start_epoch, opt.nepoch)):
         logger = setup_logger('epoch%d' % epoch, os.path.join(opt.log_dir, 'epoch_%d_log.txt' % epoch))
         logger.info('Train time {0}'.format(time.strftime("%Hh %Mm %Ss", time.gmtime(time.time() - st_time)) + ', ' + 'Training started'))
         train_count = 0

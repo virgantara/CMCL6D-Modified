@@ -13,7 +13,7 @@ import numpy.ma as ma
 import copy
 import scipy.misc
 import scipy.io as scio
-from skimage.segmentation import slic,mark_boundaries
+# from skimage.segmentation import slic,mark_boundaries
 import cv2
 
 class PoseDataset(data.Dataset):

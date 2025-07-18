@@ -11,7 +11,7 @@ export CUDA_VISIBLE_DEVICES=0
 #export CUDA_VISIBLE_DEVICES=2
 #export CUDA_VISIBLE_DEVICES=3
 export PYTHONPATH=$(pwd):$PYTHONPATH
-
+echo "PYTHONPATH = $PYTHONPATH"
 start=`date +%s`
     
 python3 ./tools/train.py --nepoch 101 --dataset ycb\

@@ -1,3 +1,3 @@
-# ninja log v5
-0	16256	1691650552	/home/wangzihanggg/CMCL6D/lib/knn/build/temp.linux-x86_64-cpython-38/home/wangzihanggg/CMCL6D/lib/knn/src/cpu/knn_cpu.o	2ed474c2cd6f84f6
-0	18724	1691650554	/home/wangzihanggg/CMCL6D/lib/knn/build/temp.linux-x86_64-cpython-38/home/wangzihanggg/CMCL6D/lib/knn/src/vision.o	dfba76f0d73f3f57
+# ninja log v6
+0	464	1752827035418608805	/home/deep/OddyProjects/CMCL6D-Modified/lib/knn/build/temp.linux-x86_64-cpython-38/home/deep/OddyProjects/CMCL6D-Modified/lib/knn/src/cuda/knn.o	2e97e5a4912643fd
+0	6152	1752827035418608805	/home/deep/OddyProjects/CMCL6D-Modified/lib/knn/build/temp.linux-x86_64-cpython-38/home/deep/OddyProjects/CMCL6D-Modified/lib/knn/src/cpu/knn_cpu.o	db2095e5a1079b9f
