@@ -14,7 +14,7 @@ export PYTHONPATH=$(pwd):$PYTHONPATH
 echo "PYTHONPATH = $PYTHONPATH"
 start=`date +%s`
     
-python3 ./tools/train.py --nepoch 101 --dataset ycb\
+python3 ./tools/train.py --nepoch 2 --dataset ycb\
   --dataset_root ./datasets/ycb/YCB_Video_Dataset
 
 end=`date +%s`

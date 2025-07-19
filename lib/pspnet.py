@@ -19,7 +19,9 @@ class PSPModule(nn.Module):
 
     def forward(self, feats):
         h, w = feats.size(2), feats.size(3)
-        priors = [F.upsample(input=stage(feats), size=(h, w), mode='bilinear') for stage in self.stages] + [feats]
+        priors = [F.interpolate(stage(feats), size=(h, w), mode='bilinear', align_corners=False) for stage in self.stages] + [feats]
+
+        # priors = [F.upsample(input=stage(feats), size=(h, w), mode='bilinear') for stage in self.stages] + [feats]
         bottle = self.bottleneck(torch.cat(priors, 1))
         return self.relu(bottle)
 
@@ -62,16 +64,31 @@ class PSPNet(nn.Module):
         )
 
     def forward(self, x):
-        f, class_f = self.feats(x) 
+        print("=== [DEBUG] ===")
+        print("Input x:", x.shape)  # (B, 3, H, W)
+        
+        f, class_f = self.feats(x)
+        print("Feature f:", f.shape)
+
         p = self.psp(f)
+        print("After psp:", p.shape)
+
         p = self.drop_1(p)
+        print("After drop1:", p.shape)
 
         p = self.up_1(p)
-        p = self.drop_2(p)
+        print("After up1:", p.shape)
 
+        p = self.drop_2(p)
         p = self.up_2(p)
-        p = self.drop_2(p)
+        print("After up2:", p.shape)
 
+        p = self.drop_2(p)
         p = self.up_3(p)
-        
-        return self.final(p)
+        print("After up3:", p.shape)
+
+        out = self.final(p)
+        print("Final out:", out.shape)
+        print("==============")
+
+        return out

@@ -15,7 +15,7 @@ import scipy.misc
 import scipy.io as scio
 # from skimage.segmentation import slic,mark_boundaries
 import cv2
-from tqdm import tqdm
+
 
 class PoseDataset(data.Dataset):
     def __init__(self, mode, num_pt, add_noise, root, noise_trans, refine):
@@ -120,7 +120,7 @@ class PoseDataset(data.Dataset):
 
         add_front = False
         if self.add_noise:
-            for k in tqdm(range(5)):
+            for k in range(5):
                 seed = random.choice(self.syn)
                 front = np.array(self.trancolor(Image.open('{0}/{1}-color.png'.format(self.root, seed)).convert("RGB")))
                 front = np.transpose(front, (2, 0, 1))
@@ -153,7 +153,7 @@ class PoseDataset(data.Dataset):
         if self.add_noise:
             img = self.trancolor(img)
         
-        img_orig = np.array(img)
+        img_orig = np.array(img).copy()
 
         rmin, rmax, cmin, cmax = get_bbox(mask_label)
         img = np.transpose(np.array(img)[:, :, :3], (2, 0, 1))[:, rmin:rmax, cmin:cmax]
@@ -179,7 +179,7 @@ class PoseDataset(data.Dataset):
             img_masked = img_masked * mask_front[rmin:rmax, cmin:cmax] + front[:, rmin:rmax, cmin:cmax] * ~(mask_front[rmin:rmax, cmin:cmax])
 
         img_masked = np.transpose(img_masked, (1, 2, 0))
-        img_masked = cv2.bitwise_and(my_mask, img_masked)
+        img_masked = cv2.bitwise_and(my_mask, img_masked).copy()
         img_masked = np.transpose(img_masked, (2, 0, 1))
         my_mask = np.transpose(my_mask, (2, 0, 1))
 
@@ -215,7 +215,8 @@ class PoseDataset(data.Dataset):
         depth_masked = depth[rmin:rmax, cmin:cmax].flatten()[choose][:, np.newaxis].astype(np.float32)
         xmap_masked = self.xmap[rmin:rmax, cmin:cmax].flatten()[choose][:, np.newaxis].astype(np.float32)
         ymap_masked = self.ymap[rmin:rmax, cmin:cmax].flatten()[choose][:, np.newaxis].astype(np.float32)
-        choose = np.array([choose])
+        # choose = np.array([choose])
+        choose = choose.flatten()
 
         cam_scale = meta['factor_depth'][0][0]
         pt2 = depth_masked / cam_scale

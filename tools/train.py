@@ -49,6 +49,8 @@ opt = parser.parse_args()
 
 
 def main():
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
     print("Init seed")
     opt.manualSeed = random.randint(1, 10000)
     random.seed(opt.manualSeed)
@@ -127,10 +129,11 @@ def main():
             refiner.train()
         else:
             estimator.train()
-        optimizer.zero_grad()
+        
 
         for rep in range(opt.repeat_epoch):
             for i, data in enumerate(dataloader, 0):
+                optimizer.zero_grad()
                 points, choose, img, target, model_points, idx, mask, dense_points = data
 
                 # points, choose, img, target, model_points, idx, mask, dense_points = Variable(points).cuda(), \
@@ -178,7 +181,7 @@ def main():
                         torch.save(estimator.state_dict(), '{0}/pose_model_current.pth'.format(opt.outf))
 
         print('>>>>>>>>----------epoch {0} train finish---------<<<<<<<<'.format(epoch))
-
+        torch.cuda.empty_cache()
 
         logger = setup_logger('epoch%d_test' % epoch, os.path.join(opt.log_dir, 'epoch_%d_test_log.txt' % epoch))
         logger.info('Test time {0}'.format(time.strftime("%Hh %Mm %Ss", time.gmtime(time.time() - st_time)) + ', ' + 'Testing started'))
@@ -187,28 +190,29 @@ def main():
         estimator.eval()
         refiner.eval()
 
-        for j, data in enumerate(testdataloader, 0):
-            points, choose, img, target, model_points, idx, mask, dense_points = data
-            points, choose, img, target, model_points, idx, mask, dense_points = Variable(points).cuda(), \
-                                                                   Variable(choose).cuda(), \
-                                                                   Variable(img).cuda(), \
-                                                                   Variable(target).cuda(), \
-                                                                   Variable(model_points).cuda(), \
-                                                                   Variable(idx).cuda(), \
-                                                                   Variable(mask).cuda(), \
-                                                                   Variable(dense_points).cuda()
-            pred_r, pred_t, pred_c, emb = estimator(img, points, choose, idx, mask, dense_points)
-            _, dis, new_points, new_target = criterion(pred_r, pred_t, pred_c, target, model_points, idx, points, opt.w, opt.refine_start)
+        with torch.no_grad():
+            for j, data in enumerate(testdataloader, 0):
+                points, choose, img, target, model_points, idx, mask, dense_points = data
+                points, choose, img, target, model_points, idx, mask, dense_points = Variable(points).cuda(), \
+                                                                       Variable(choose).cuda(), \
+                                                                       Variable(img).cuda(), \
+                                                                       Variable(target).cuda(), \
+                                                                       Variable(model_points).cuda(), \
+                                                                       Variable(idx).cuda(), \
+                                                                       Variable(mask).cuda(), \
+                                                                       Variable(dense_points).cuda()
+                pred_r, pred_t, pred_c, emb = estimator(img, points, choose, idx, mask, dense_points)
+                _, dis, new_points, new_target = criterion(pred_r, pred_t, pred_c, target, model_points, idx, points, opt.w, opt.refine_start)
 
-            if opt.refine_start:
-                for ite in range(0, opt.iteration):
-                    pred_r, pred_t = refiner(new_points, emb, idx, dense_points)
-                    dis, new_points, new_target = criterion_refine(pred_r, pred_t, new_target, model_points, idx, new_points)
+                if opt.refine_start:
+                    for ite in range(0, opt.iteration):
+                        pred_r, pred_t = refiner(new_points, emb, idx, dense_points)
+                        dis, new_points, new_target = criterion_refine(pred_r, pred_t, new_target, model_points, idx, new_points)
 
-            test_dis += dis.item()
-            logger.info('Test time {0} Test Frame No.{1} dis:{2}'.format(time.strftime("%Hh %Mm %Ss", time.gmtime(time.time() - st_time)), test_count, dis))
+                test_dis += dis.item()
+                logger.info('Test time {0} Test Frame No.{1} dis:{2}'.format(time.strftime("%Hh %Mm %Ss", time.gmtime(time.time() - st_time)), test_count, dis))
 
-            test_count += 1
+                test_count += 1
 
         test_dis = test_dis / test_count
         logger.info('Test time {0} Epoch {1} TEST FINISH Avg dis: {2}'.format(time.strftime("%Hh %Mm %Ss", time.gmtime(time.time() - st_time)), epoch, test_dis))
